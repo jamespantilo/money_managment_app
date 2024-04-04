@@ -1,44 +1,45 @@
 {
   "project_info": {
-    "project_number": "585500037154",
-    "project_id": "stage-init-b7bfe",
-    "storage_bucket": "stage-init-b7bfe.appspot.com"
+    "project_number": "1080860924868",
+    "project_id": "hussein-questions",
+    "storage_bucket": "hussein-questions.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:585500037154:android:03e152a4677cd4f377ba7b",
+        "mobilesdk_app_id": "1:1080860924868:android:0af8a655667d3ffe636291",
         "android_client_info": {
           "package_name": "com.example.pfe_project"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "585500037154-vk7p4s0cjmvrj0imnead3fhae132beu7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.pfe_project",
-            "certificate_hash": "0ffff89d84d5e8c0263cfff10a609c47410a5c36"
-          }
-        },
-        {
-          "client_id": "585500037154-amdq7tbfid02adqbagl4u3hp75h1ntdc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDUFrK45pRBnWE47niLNYA5Zd2hycHk5GQ"
+          "current_key": "AIzaSyBdTNPJES9faAdZvmlebygFn1IgRj7SSIU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "585500037154-9dl9lfof17h28ouut67qvgs0e4p8hpjf.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080860924868:android:1862bf224120d557636291",
+        "android_client_info": {
+          "package_name": "com.imamhussein.imamhusseinquiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdTNPJES9faAdZvmlebygFn1IgRj7SSIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

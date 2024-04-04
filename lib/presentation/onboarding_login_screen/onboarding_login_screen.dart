@@ -136,37 +136,38 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
       hintText: "Password",
       textInputAction: TextInputAction.done,
       textInputType: TextInputType.visiblePassword,
-      suffix: tapIcon ? InkWell(
-        onTap: () {
-          setState(() {
-            tapIcon ? tapIcon = false : tapIcon = true;
-          });
-        },
-        child: Container(
-          margin: EdgeInsets.fromLTRB(30.h, 12.v, 16.h, 12.v),
-          child: CustomImageView(
-            imagePath: ImageConstant.imgEye,
-            height: 32.adaptSize,
-            width: 32.adaptSize,
-            color: Colors.black,
-
-          ),
-        ),
-      ) : InkWell(
-        onTap: () {
-          setState(() {
-            tapIcon ? tapIcon = false : tapIcon = true;
-          });
-        },
-        child: Container(
-          margin: EdgeInsets.fromLTRB(30.h, 12.v, 22  .h, 12.v),
-          child: CustomImageView(
-            imagePath: 'assets/images/hidepswd.png',
-            height: 24.adaptSize,
-            width: 24.adaptSize,
-          ),
-        ),
-      ),
+      suffix: tapIcon
+          ? InkWell(
+              onTap: () {
+                setState(() {
+                  tapIcon ? tapIcon = false : tapIcon = true;
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.fromLTRB(30.h, 12.v, 16.h, 12.v),
+                child: CustomImageView(
+                  imagePath: ImageConstant.imgEye,
+                  height: 32.adaptSize,
+                  width: 32.adaptSize,
+                  color: Colors.black,
+                ),
+              ),
+            )
+          : InkWell(
+              onTap: () {
+                setState(() {
+                  tapIcon ? tapIcon = false : tapIcon = true;
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.fromLTRB(30.h, 12.v, 22.h, 12.v),
+                child: CustomImageView(
+                  imagePath: 'assets/images/hidepswd.png',
+                  height: 24.adaptSize,
+                  width: 24.adaptSize,
+                ),
+              ),
+            ),
       suffixConstraints: BoxConstraints(
         maxHeight: 56.v,
       ),
@@ -218,13 +219,13 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
       GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+            await googleSignInAccount.authentication;
         AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
         );
         UserCredential authResult =
-        await _auth.signInWithCredential(credential);
+            await _auth.signInWithCredential(credential);
         return authResult.user;
       } else {
         // User canceled the Google sign in
@@ -250,7 +251,7 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
         // Sign-in successful, navigate to next screen or perform other actions
       } catch (e) {
         // Sign-in failed, handle error
-        print("Failed to sign in: $e");
+        debugPrint("Failed to sign in: $e");
         AwesomeDialog(
           context: context,
           dialogType: DialogType.error,
@@ -273,5 +274,4 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
   onTapTxtConfirmation(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.onboardingSignUpScreen);
   }
-
 }
