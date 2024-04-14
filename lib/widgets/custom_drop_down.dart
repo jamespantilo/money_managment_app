@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
 class CustomDropDown extends StatelessWidget {
-  CustomDropDown({
+  const CustomDropDown({
     Key? key,
     this.alignment,
     this.width,
@@ -22,7 +22,7 @@ class CustomDropDown extends StatelessWidget {
     this.fillColor,
     this.filled = false,
     this.validator,
-    this.onChanged,
+    this.onChanged,  this.ontap,
   }) : super(
           key: key,
         );
@@ -61,6 +61,8 @@ class CustomDropDown extends StatelessWidget {
 
   final bool? filled;
 
+  final  Function()? ontap;
+
   final FormFieldValidator<String>? validator;
 
   final Function(String)? onChanged;
@@ -78,6 +80,7 @@ class CustomDropDown extends StatelessWidget {
   Widget get dropDownWidget => SizedBox(
         width: width ?? double.maxFinite,
         child: DropdownButtonFormField(
+          onTap: ontap,
           focusNode: focusNode,
           icon: icon,
           autofocus: autofocus!,

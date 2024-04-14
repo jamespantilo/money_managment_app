@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
 class HomePageDropDrown extends StatelessWidget {
-  HomePageDropDrown({
+  const HomePageDropDrown({
     Key? key,
     this.alignment,
     this.width,
@@ -22,7 +22,7 @@ class HomePageDropDrown extends StatelessWidget {
     this.fillColor,
     this.filled = false,
     this.validator,
-    this.onChanged,
+    this.onChanged, required this.onMonthChoose,
   }) : super(
           key: key,
         );
@@ -64,6 +64,7 @@ class HomePageDropDrown extends StatelessWidget {
   final FormFieldValidator<String>? validator;
 
   final Function(String)? onChanged;
+  final Function(String) onMonthChoose;
 
   @override
   Widget build(BuildContext context) {
@@ -87,14 +88,18 @@ class HomePageDropDrown extends StatelessWidget {
               value: value,
               child: Text(
                 value,
-                overflow: TextOverflow.ellipsis,
                 style: hintStyle ?? theme.textTheme.bodyLarge,
               ),
             );
           }).toList(),
           decoration: decoration,
           validator: validator,
-          onChanged: (value) {},
+          onChanged: (value) {
+            if (value != null) {
+              // Call the provided callback function with the selected value
+              onMonthChoose(value);
+            }
+          },
         ),
       );
   InputDecoration get decoration => InputDecoration(

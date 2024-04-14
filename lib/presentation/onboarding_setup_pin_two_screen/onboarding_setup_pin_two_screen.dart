@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-class OnboardingSetupPinTwoScreen extends StatelessWidget {
-  const OnboardingSetupPinTwoScreen({Key? key})
-      : super(
-          key: key,
-        );
+class OnboardingSetupPinTwoScreen extends StatefulWidget {
+  const OnboardingSetupPinTwoScreen({super.key});
 
+  @override
+  State<OnboardingSetupPinTwoScreen> createState() =>
+      _OnboardingSetupPinTwoScreenState();
+}
+
+class _OnboardingSetupPinTwoScreenState
+    extends State<OnboardingSetupPinTwoScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -30,7 +34,7 @@ class OnboardingSetupPinTwoScreen extends StatelessWidget {
                         "Ok. Re type your PIN again.",
                         style: CustomTextStyles.titleMediumGray50,
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Padding(
                         padding: EdgeInsets.only(
                           left: 9.h,
@@ -43,14 +47,14 @@ class OnboardingSetupPinTwoScreen extends StatelessWidget {
                               "1",
                               style: theme.textTheme.displayMedium,
                             ),
-                            Spacer(
+                            const Spacer(
                               flex: 51,
                             ),
                             Text(
                               "2",
                               style: theme.textTheme.displayMedium,
                             ),
-                            Spacer(
+                            const Spacer(
                               flex: 48,
                             ),
                             Text(

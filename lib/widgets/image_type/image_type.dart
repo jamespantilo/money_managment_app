@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class CustomImageView extends StatelessWidget {
+class ImageTypeView extends StatelessWidget {
   ///[imagePath] is required parameter for showing image
   String? imagePath;
 
@@ -20,10 +20,11 @@ class CustomImageView extends StatelessWidget {
   EdgeInsetsGeometry? margin;
   BorderRadius? radius;
   BoxBorder? border;
+  final String imageType;
 
-  ///a [CustomImageView] it can be used for showing any type of images
+  ///a [ImageTypeView] it can be used for showing any type of images
   /// it will shows the placeholder image if image is not found on network image
-  CustomImageView({super.key, 
+  ImageTypeView({super.key,
     this.imagePath,
     this.height,
     this.width,
@@ -34,16 +35,16 @@ class CustomImageView extends StatelessWidget {
     this.radius,
     this.margin,
     this.border,
-    this.placeHolder = 'assets/images/image_not_found.png',
+    this.placeHolder = 'assets/images/image_not_found.png', required this.imageType,
   });
 
   @override
   Widget build(BuildContext context) {
     return alignment != null
         ? Align(
-            alignment: alignment!,
-            child: _buildWidget(),
-          )
+      alignment: alignment!,
+      child: _buildWidget(),
+    )
         : _buildWidget();
   }
 
@@ -86,8 +87,8 @@ class CustomImageView extends StatelessWidget {
 
   Widget _buildImageView() {
     if (imagePath != null) {
-      switch (imagePath!.imageType) {
-        case ImageType.svg:
+      switch (imageType) {
+        case "svg":
           return SizedBox(
             height: height,
             width: width,
@@ -98,11 +99,11 @@ class CustomImageView extends StatelessWidget {
               fit: fit ?? BoxFit.contain,
               colorFilter: color != null
                   ? ColorFilter.mode(
-                      color ?? Colors.transparent, BlendMode.srcIn)
+                  color ?? Colors.transparent, BlendMode.srcIn)
                   : null,
             ),
           );
-        case ImageType.file:
+        case "file":
           return Image.file(
             File(imagePath!),
             height: height,
@@ -110,7 +111,7 @@ class CustomImageView extends StatelessWidget {
             fit: fit ?? BoxFit.cover,
             color: color,
           );
-        case ImageType.network:
+        case "network":
           return CachedNetworkImage(
             height: height,
             width: width,
@@ -132,7 +133,7 @@ class CustomImageView extends StatelessWidget {
               fit: fit ?? BoxFit.cover,
             ),
           );
-        case ImageType.png:
+        case "asset":
         default:
           return Image.asset(
             imagePath!,

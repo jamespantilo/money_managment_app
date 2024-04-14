@@ -6,18 +6,21 @@ import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-// ignore: must_be_immutable
-class OnboardingResetPasswordScreen extends StatelessWidget {
-  OnboardingResetPasswordScreen({Key? key})
-      : super(
-          key: key,
-        );
+class OnboardingResetPasswordScreen extends StatefulWidget {
+  const OnboardingResetPasswordScreen({super.key});
 
+  @override
+  State<OnboardingResetPasswordScreen> createState() =>
+      _OnboardingResetPasswordScreenState();
+}
+
+class _OnboardingResetPasswordScreenState
+    extends State<OnboardingResetPasswordScreen> {
   TextEditingController newpasswordController = TextEditingController();
 
   TextEditingController newpasswordController1 = TextEditingController();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {

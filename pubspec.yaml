@@ -46,6 +46,12 @@ dependencies:
   awesome_dialog: ^3.2.0
   google_sign_in: ^6.1.6
   shared_preferences: ^2.2.2
+  firebase_storage: ^11.6.0
+  cloud_firestore: ^4.14.0
+  file_picker: ^8.0.0+1
+  awesome_notifications: ^0.9.3+1
+  provider: ^6.1.2
+  pie_chart: ^5.4.0
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +79,7 @@ flutter:
   assets: 
     - assets/
     - assets/images/
+    - assets/categories/
   fonts: 
     - family: Inter
       fonts: 

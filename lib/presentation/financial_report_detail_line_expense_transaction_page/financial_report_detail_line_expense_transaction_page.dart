@@ -38,7 +38,7 @@ class FinancialReportDetailLineExpenseTransactionPageState
                   right: 9.h,
                 ),
                 child: ListView.separated(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   separatorBuilder: (
                     context,

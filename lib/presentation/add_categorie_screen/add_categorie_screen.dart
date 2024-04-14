@@ -7,20 +7,21 @@ import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-// ignore_for_file: must_be_immutable
-class AddCategorieScreen extends StatelessWidget {
-  AddCategorieScreen({Key? key})
-      : super(
-          key: key,
-        );
+class AddCategorieScreen extends StatefulWidget {
+  const AddCategorieScreen({super.key});
 
+  @override
+  State<AddCategorieScreen> createState() => _AddCategorieScreenState();
+}
+
+class _AddCategorieScreenState extends State<AddCategorieScreen> {
   TextEditingController nameController = TextEditingController();
 
   TextEditingController inputFieldController = TextEditingController();
 
   List<String> dropdownItemList = ["Type 1", "Type 2", "Type 3"];
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +58,7 @@ class AddCategorieScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 24.v),
-                    Padding(
-                      padding: EdgeInsets.only(right: 15.h),
-                      child: CustomTextFormField(
-                        controller: inputFieldController,
-                        hintText: "categorie description",
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        textStyle: const TextStyle(
-                          color: Colors.black,
-                        ),
-                        textInputAction: TextInputAction.done,
-                      ),
-                    ),
+
                     SizedBox(height: 24.v),
                     Padding(
                       padding: EdgeInsets.only(right: 15.h),
@@ -146,6 +136,7 @@ class AddCategorieScreen extends StatelessWidget {
 
   /// Navigates to the categorieContainerScreen when the action is triggered.
   onTapAdd(BuildContext context) {
-    Navigator.pop(context);
+   Navigator.pop(context);
+
   }
 }

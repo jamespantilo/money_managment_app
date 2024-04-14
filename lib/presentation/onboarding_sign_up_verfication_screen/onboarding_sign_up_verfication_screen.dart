@@ -5,12 +5,16 @@ import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-class OnboardingSignUpVerficationScreen extends StatelessWidget {
-  const OnboardingSignUpVerficationScreen({Key? key})
-      : super(
-          key: key,
-        );
+class OnboardingSignUpVerficationScreen extends StatefulWidget {
+  const OnboardingSignUpVerficationScreen({super.key});
 
+  @override
+  State<OnboardingSignUpVerficationScreen> createState() =>
+      _OnboardingSignUpVerficationScreenState();
+}
+
+class _OnboardingSignUpVerficationScreenState
+    extends State<OnboardingSignUpVerficationScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,7 +30,7 @@ class OnboardingSignUpVerficationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Spacer(),
+              const Spacer(),
               Container(
                 width: 297.h,
                 margin: EdgeInsets.only(right: 49.h),

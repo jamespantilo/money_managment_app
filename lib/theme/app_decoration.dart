@@ -57,7 +57,7 @@ class AppDecoration {
   static BoxDecoration get outlineGray100021 => BoxDecoration(
         color: theme.colorScheme.onErrorContainer,
       );
-  static BoxDecoration get outlineGray100022 => BoxDecoration();
+  static BoxDecoration get outlineGray100022 => const BoxDecoration();
   static BoxDecoration get outlineGray50 => BoxDecoration(
         border: Border.all(
           color: appTheme.gray50,

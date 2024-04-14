@@ -1,6 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:ffi';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pfe_project/main.dart';
@@ -25,10 +28,12 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
 
   TextEditingController passwordController = TextEditingController();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   bool tapIcon = false;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,65 +41,70 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: _buildAppBar(context),
-        body: SizedBox(
-          width: SizeUtils.width,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: SizedBox(
-              height: SizeUtils.height,
-              child: Form(
-                key: _formKey,
-                child: Container(
-                  width: double.maxFinite,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 22.h,
-                    vertical: 56.v,
-                  ),
-                  child: Column(
-                    children: [
-                      _buildEmail(context),
-                      SizedBox(height: 24.v),
-                      _buildPassword(context),
-                      SizedBox(height: 40.v),
-                      _buildLogin(context),
-                      SizedBox(height: 35.v),
-                      GestureDetector(
-                        onTap: () {
-                          onTapTxtForgotPassword(context);
-                        },
-                        child: Text(
-                          "Forgot Password?",
-                          style: CustomTextStyles.titleMediumPrimarySemiBold,
-                        ),
+        body: Stack(
+          children: [
+            loading ? const Center(child: CircularProgressIndicator(color: Colors.red,),) : const SizedBox(),
+            SizedBox(
+              width: SizeUtils.width,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: SizedBox(
+                  height: SizeUtils.height,
+                  child: Form(
+                    key: _formKey,
+                    child: Container(
+                      width: double.maxFinite,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 22.h,
+                        vertical: 56.v,
                       ),
-                      SizedBox(height: 36.v),
-                      GestureDetector(
-                        onTap: () {
-                          onTapTxtConfirmation(context);
-                        },
-                        child: Text(
-                          "Don’t have an account yet? Sign Up",
-                          style: CustomTextStyles.titleMediumPrimary.copyWith(
-                            decoration: TextDecoration.underline,
+                      child: Column(
+                        children: [
+                          _buildEmail(context),
+                          SizedBox(height: 24.v),
+                          _buildPassword(context),
+                          SizedBox(height: 40.v),
+                          _buildLogin(context),
+                          SizedBox(height: 35.v),
+                          GestureDetector(
+                            onTap: () {
+                              onTapTxtForgotPassword(context);
+                            },
+                            child: Text(
+                              "Forgot Password?",
+                              style: CustomTextStyles.titleMediumPrimarySemiBold,
+                            ),
                           ),
-                        ),
+                          SizedBox(height: 36.v),
+                          GestureDetector(
+                            onTap: () {
+                              onTapTxtConfirmation(context);
+                            },
+                            child: Text(
+                              "Don’t have an account yet? Sign Up",
+                              style: CustomTextStyles.titleMediumPrimary.copyWith(
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            "Or",
+                            style: CustomTextStyles.titleSmallOnPrimaryContainer,
+                          ),
+                          SizedBox(height: 14.v),
+                          _buildSignInWithGoogle(context),
+                          SizedBox(height: 57.v)
+                        ],
                       ),
-                      Spacer(),
-                      Text(
-                        "Or",
-                        style: CustomTextStyles.titleSmallOnPrimaryContainer,
-                      ),
-                      SizedBox(height: 14.v),
-                      _buildSignInWithGoogle(context),
-                      SizedBox(height: 57.v)
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -126,6 +136,15 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
       controller: emailController,
       hintText: "Email",
       textInputType: TextInputType.emailAddress,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please fill the email';
+        }
+        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+          return 'Please enter a valid email';
+        }
+        return null;
+      },
     );
   }
 
@@ -198,8 +217,11 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
         User? user = await _handleSignIn();
         if (user != null) {
           await sharedPref!.setInt('signin', 1);
-          Navigator.pushNamedAndRemoveUntil(
-              context, AppRoutes.homepage, (route) => false);
+          sharedPref!.getBool('set_profile')!
+              ? Navigator.pushNamedAndRemoveUntil(
+                  context, AppRoutes.homepage, (route) => false)
+              : Navigator.pushNamedAndRemoveUntil(
+                  context, AppRoutes.setprofilePage, (route) => false);
         }
       },
       text: "Sign in with Google",
@@ -237,17 +259,88 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
     }
   }
 
+
+
+   Future<int?>fetchUserProfile(String userId) async {
+     try {
+       QuerySnapshot querySnapshot = await _firestore
+           .collection('user')
+           .where('userId', isEqualTo: userId)
+           .limit(1)
+           .get();
+       if (querySnapshot.docs.isNotEmpty) {
+         var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+         return userData['set_profile'] as int?;
+       } else {
+         return null; // User document not found
+       }
+     } catch (e) {
+       print('Error fetching user profile: $e');
+       return null; // Handle error fetching user profile
+     }
+  }
+
+  Future<String?>fetchUserEmail(String userId) async {
+
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('user')
+          .where('userId', isEqualTo: userId)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        return userData['email'] as String?;
+      } else {
+        return null; // User document not found
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      return null; // Handle error fetching user profile
+    }
+  }
+
   /// Navigates to the onboardingOnboardingThirteenScreen when the action is triggered.
   onTapLogin(BuildContext context) async {
+    setState(() {
+      loading = true;
+    });
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
+        final userId1 = userCredential.user!.uid;
+        sharedPref!.getString('userId') ??
+              await sharedPref!.setString('userId', userId1);
+        userId = sharedPref!.getString('userId')!;
+        sharedPref!.getString('imagePath') ?? await getImagePath(sharedPref!.getString('userId')!);
+        sharedPref!.getString('username') ?? await getImagePath(sharedPref!.getString('userId')!);
+        fetchCategoriesByUserId().then((_) async {
+          await fetchAndMergeCategories();
+        });
+        int? userProfile = await fetchUserProfile(userId1);
+        if (userProfile != null) {
+          await sharedPref!.setInt('set_profile', userProfile);
+        } else {
+          await sharedPref!.setInt('set_profile', 0);
+        }
+        String? userEmail = await fetchUserEmail(userId1);
+        if (userEmail != null) {
+          await sharedPref!.setString('email', userEmail);
+        } else {
+          await sharedPref!.setString('email', emailController.text);
+        }
         await sharedPref!.setInt('signin', 1);
-        Navigator.pushNamedAndRemoveUntil(
-            context, AppRoutes.homepage, (route) => false);
+        setState(() {
+          loading = false;
+        });
+        sharedPref!.getInt('set_profile')! != 0
+            ? Navigator.pushNamedAndRemoveUntil(
+                context, AppRoutes.homepage, (route) => false)
+            : Navigator.pushNamedAndRemoveUntil(
+                context, AppRoutes.setprofilePage, (route) => false);
         // Sign-in successful, navigate to next screen or perform other actions
       } catch (e) {
         // Sign-in failed, handle error
@@ -262,6 +355,10 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
           btnCancelText: "Ok",
         ).show();
       }
+    }else {
+      setState(() {
+        loading = false;
+      });
     }
   }
 

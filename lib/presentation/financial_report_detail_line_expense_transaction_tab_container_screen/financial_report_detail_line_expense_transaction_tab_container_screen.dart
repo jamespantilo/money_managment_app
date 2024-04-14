@@ -204,7 +204,7 @@ class FinancialReportDetailLineExpenseTransactionTabContainerScreenState
       child: TabBarView(
         controller: tabviewController,
         children: const [
-          FinancialReportDetailPieExpenseCategoryPage(),
+          FinancialReportDetailPieExpenseCategoryPage(dataMap: {},expenses: [],incomes: []),
           FinancialReportDetailLineExpenseTransactionPage(),
         ],
       ),

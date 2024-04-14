@@ -2,12 +2,18 @@ import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-class OnboardingForgotPasswordEmailSentScreen extends StatelessWidget {
-  const OnboardingForgotPasswordEmailSentScreen({Key? key})
-      : super(
-          key: key,
-        );
+class OnboardingForgotPasswordEmailSentScreen extends StatefulWidget {
+  const OnboardingForgotPasswordEmailSentScreen({super.key, required this.email});
 
+  final String email;
+
+  @override
+  State<OnboardingForgotPasswordEmailSentScreen> createState() =>
+      _OnboardingForgotPasswordEmailSentScreenState();
+}
+
+class _OnboardingForgotPasswordEmailSentScreenState
+    extends State<OnboardingForgotPasswordEmailSentScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,7 +48,7 @@ class OnboardingForgotPasswordEmailSentScreen extends StatelessWidget {
                   right: 24.h,
                 ),
                 child: Text(
-                  "Check your email test@test.com and follow the instructions to reset your password",
+                  "Check your email ${widget.email} and follow the instructions to reset your password",
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,

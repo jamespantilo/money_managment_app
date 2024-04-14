@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:pfe_project/widgets/app_bar/custom_app_bar.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_subtitle.dart';
@@ -6,12 +7,14 @@ import 'package:pfe_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-class MenuPageScreen extends StatelessWidget {
-  const MenuPageScreen({Key? key})
-      : super(
-          key: key,
-        );
+class MenuPageScreen extends StatefulWidget {
+  const MenuPageScreen({super.key});
 
+  @override
+  State<MenuPageScreen> createState() => _MenuPageScreenState();
+}
+
+class _MenuPageScreenState extends State<MenuPageScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -66,7 +69,7 @@ class MenuPageScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomImageView(
-            imagePath: ImageConstant.myImg,
+            imagePath: sharedPref!.getString('imagePath'),
             width: 80.h,
             height: 80.h,
             fit: BoxFit.cover,
@@ -90,7 +93,7 @@ class MenuPageScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 6.v),
                 Text(
-                  "Izeddin ",
+                  sharedPref!.getString('username')!,
                   style: CustomTextStyles.headlineSmallPrimaryContainer,
                 ),
               ],
@@ -325,9 +328,22 @@ class MenuPageScreen extends StatelessWidget {
   /// Section Widget
   Widget _buildTen(BuildContext context) {
     return InkWell(
-      onTap: () async{
-        await sharedPref!.setInt('signin',0);
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.onboardingLoginScreen, (route) => false);
+      onTap: () async {
+        await AwesomeDialog(
+          context: context,
+          dialogType: DialogType.info,
+          animType: AnimType.rightSlide,
+          desc: 'Do you really want to logout the app ?',
+          btnCancelOnPress: () {},
+          btnCancelText: "No",
+          btnOkOnPress: () async {
+            await sharedPref!.setInt('signin', 0);
+            Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.onboardingLoginScreen, (route) => false);
+          },
+          btnOkText: "Yes",
+        ).show();
+
       },
       child: Container(
         margin: EdgeInsets.only(right: 10.h),

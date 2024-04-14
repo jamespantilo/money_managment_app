@@ -5,12 +5,16 @@ import 'package:pfe_project/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-class NotificationNotificationScreen extends StatelessWidget {
-  const NotificationNotificationScreen({Key? key})
-      : super(
-          key: key,
-        );
+class NotificationNotificationScreen extends StatefulWidget {
+  const NotificationNotificationScreen({super.key});
 
+  @override
+  State<NotificationNotificationScreen> createState() =>
+      _NotificationNotificationScreenState();
+}
+
+class _NotificationNotificationScreenState
+    extends State<NotificationNotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,7 +37,7 @@ class NotificationNotificationScreen extends StatelessWidget {
   /// Section Widget
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return CustomAppBar(
-      height: 68.v,
+
       leadingWidth: 48.h,
       leading: AppbarLeadingImage(
         imagePath: ImageConstant.imgMagiconsGlyphPrimary,

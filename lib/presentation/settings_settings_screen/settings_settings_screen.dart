@@ -23,7 +23,7 @@ class SettingsSettingsScreen extends StatelessWidget {
               _buildFrame(
                 context,
                 language: "Currency",
-                english: "USD",
+                english: "DH",
               ),
               _buildFrame(
                 context,
@@ -33,7 +33,7 @@ class SettingsSettingsScreen extends StatelessWidget {
               _buildFrame(
                 context,
                 language: "Theme",
-                english: "Dark",
+                english: "Light",
               ),
               SizedBox(height: 3.v),
               _buildFrameNinetyEight(
@@ -96,7 +96,7 @@ class SettingsSettingsScreen extends StatelessWidget {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Padding(
             padding: EdgeInsets.only(top: 5.v),
             child: Text(

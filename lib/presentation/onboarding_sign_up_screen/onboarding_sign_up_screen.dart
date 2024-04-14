@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:pfe_project/main.dart';
 import 'package:pfe_project/widgets/app_bar/custom_app_bar.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_subtitle.dart';
@@ -28,10 +29,12 @@ class _OnboardingSignUpScreenState extends State<OnboardingSignUpScreen> {
   TextEditingController passwordController = TextEditingController();
 
   bool checkbox = false;
+  bool loading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  bool tapIcon = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,65 +42,76 @@ class _OnboardingSignUpScreenState extends State<OnboardingSignUpScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: _buildAppBar(context),
-        body: SizedBox(
-          width: SizeUtils.width,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 23.h,
-                  vertical: 58.v,
+        body: Stack(
+          children: [
+            SizedBox(
+              width: SizeUtils.width,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: Column(
-                  children: [
-                    _buildName(context),
-                    SizedBox(height: 25.v),
-                    _buildEmail(context),
-                    SizedBox(height: 25.v),
-                    _buildPassword(context),
-                    SizedBox(height: 18.v),
-                    _buildCheckbox(context),
-                    SizedBox(height: 25.v),
-                    _buildSignUp(context),
-                    SizedBox(height: 12.v),
-                    Text(
-                      "Or",
-                      style: CustomTextStyles.titleSmallOnPrimaryContainer,
+                child: Form(
+                  key: _formKey,
+                  child: Container(
+                    width: double.maxFinite,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 23.h,
+                      vertical: 58.v,
                     ),
-                    SizedBox(height: 14.v),
-                    _buildSignUpWithGoogle(context),
-                    SizedBox(height: 19.v),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () {
-                          onTapTxtConfirmation(context);
-                        },
-                        child: Container(
-                          width: 197.h,
-                          margin: EdgeInsets.only(left: 49.h),
-                          child: Text(
-                            "Already have an account? Login",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: CustomTextStyles.titleMediumPrimary.copyWith(
-                              decoration: TextDecoration.underline,
+                    child: Column(
+                      children: [
+                        _buildName(context),
+                        SizedBox(height: 25.v),
+                        _buildEmail(context),
+                        SizedBox(height: 25.v),
+                        _buildPassword(context),
+                        SizedBox(height: 18.v),
+                        _buildCheckbox(context),
+                        SizedBox(height: 25.v),
+                        _buildSignUp(context),
+                        SizedBox(height: 12.v),
+                        Text(
+                          "Or",
+                          style: CustomTextStyles.titleSmallOnPrimaryContainer,
+                        ),
+                        SizedBox(height: 14.v),
+                        _buildSignUpWithGoogle(context),
+                        SizedBox(height: 19.v),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () {
+                              onTapTxtConfirmation(context);
+                            },
+                            child: Container(
+                              width: 197.h,
+                              margin: EdgeInsets.only(left: 49.h),
+                              child: Text(
+                                "Already have an account? Login",
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: CustomTextStyles.titleMediumPrimary
+                                    .copyWith(
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        SizedBox(height: 5.v)
+                      ],
                     ),
-                    SizedBox(height: 5.v)
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+            loading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                    color: Colors.red,
+                  ))
+                : Container(),
+          ],
         ),
       ),
     );
@@ -162,18 +176,42 @@ class _OnboardingSignUpScreenState extends State<OnboardingSignUpScreen> {
       hintText: "Password",
       textInputAction: TextInputAction.done,
       textInputType: TextInputType.visiblePassword,
-      suffix: Container(
-        margin: EdgeInsets.fromLTRB(30.h, 13.v, 16.h, 13.v),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgEye,
-          height: 32.adaptSize,
-          width: 32.adaptSize,
-        ),
-      ),
+      suffix: tapIcon
+          ? InkWell(
+              onTap: () {
+                setState(() {
+                  tapIcon ? tapIcon = false : tapIcon = true;
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.fromLTRB(30.h, 12.v, 16.h, 12.v),
+                child: CustomImageView(
+                  imagePath: ImageConstant.imgEye,
+                  height: 32.adaptSize,
+                  width: 32.adaptSize,
+                  color: Colors.black,
+                ),
+              ),
+            )
+          : InkWell(
+              onTap: () {
+                setState(() {
+                  tapIcon ? tapIcon = false : tapIcon = true;
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.fromLTRB(30.h, 12.v, 22.h, 12.v),
+                child: CustomImageView(
+                  imagePath: 'assets/images/hidepswd.png',
+                  height: 24.adaptSize,
+                  width: 24.adaptSize,
+                ),
+              ),
+            ),
       suffixConstraints: BoxConstraints(
         maxHeight: 58.v,
       ),
-      obscureText: true,
+      obscureText: tapIcon ? false : true,
       contentPadding: EdgeInsets.only(
         left: 16.h,
         top: 19.v,
@@ -217,6 +255,9 @@ class _OnboardingSignUpScreenState extends State<OnboardingSignUpScreen> {
       height: 58.v,
       text: "Sign Up",
       onPressed: () {
+        setState(() {
+          loading = true;
+        });
         onTapSignUp(context);
       },
     );
@@ -253,6 +294,10 @@ class _OnboardingSignUpScreenState extends State<OnboardingSignUpScreen> {
           email: emailController.text,
           password: passwordController.text,
         );
+        await sharedPref!.setString('name', nameController.text);
+        setState(() {
+          loading = false;
+        });
         await AwesomeDialog(
           context: context,
           dialogType: DialogType.success,
@@ -265,7 +310,38 @@ class _OnboardingSignUpScreenState extends State<OnboardingSignUpScreen> {
 
         Navigator.pushNamedAndRemoveUntil(
             context, AppRoutes.onboardingLoginScreen, (route) => false);
-      } catch (e) {
+      }on FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+          // Email is already registered
+          await AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Sign Up Error',
+            desc: 'The email address is already in use. Please use a different email or try logging in.',
+            btnCancelOnPress: () {},
+            btnCancelText: "Ok",
+          ).show();
+          setState(() {
+            loading = false;
+          });
+
+        } else {
+          await AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'Sign Up Error',
+            desc: 'Failed to sign up. Please try again.',
+            btnCancelOnPress: () {},
+            btnCancelText: "Ok",
+          ).show();
+        }
+        setState(() {
+          loading = false;
+        });
+      }
+      catch (e) {
         // Handle sign up errors
         print("Error signing up: $e");
       }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField({
+  const CustomTextFormField({
     Key? key,
     this.alignment,
     this.width,
@@ -25,7 +25,7 @@ class CustomTextFormField extends StatelessWidget {
     this.borderDecoration,
     this.fillColor,
     this.filled = true,
-    this.validator,
+    this.validator, this.enable, this.inisialValue,
   }) : super(
           key: key,
         );
@@ -72,6 +72,10 @@ class CustomTextFormField extends StatelessWidget {
 
   final bool? filled;
 
+  final bool? enable;
+
+  final String? inisialValue;
+
   final FormFieldValidator<String>? validator;
 
   @override
@@ -86,11 +90,14 @@ class CustomTextFormField extends StatelessWidget {
 
   Widget textFormFieldWidget(BuildContext context) => SizedBox(
         width: width ?? double.maxFinite,
+
         child: TextFormField(
           scrollPadding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           controller: controller,
           focusNode: focusNode,
+initialValue: inisialValue ?? null,
+
           onTapOutside: (event) {
             if (focusNode != null) {
               focusNode?.unfocus();
@@ -106,9 +113,11 @@ class CustomTextFormField extends StatelessWidget {
           maxLines: maxLines ?? 1,
           decoration: decoration,
           validator: validator,
+          enabled: enable,
         ),
       );
   InputDecoration get decoration => InputDecoration(
+
         hintText: hintText ?? "",
         hintStyle: hintStyle ?? CustomTextStyles.titleMediumOnPrimary,
         prefixIcon: prefix,
@@ -159,7 +168,7 @@ extension TextFormFieldStyleHelper on CustomTextFormField {
           width: 1,
         ),
       );
-  static OutlineInputBorder get fillOnErrorContainer => OutlineInputBorder(
+  static OutlineInputBorder get fillOnErrorContainer => const OutlineInputBorder(
         borderSide: BorderSide.none,
       );
 }

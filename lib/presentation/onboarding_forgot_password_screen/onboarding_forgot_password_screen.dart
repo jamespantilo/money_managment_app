@@ -1,3 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pfe_project/presentation/onboarding_forgot_password_email_sent_screen/onboarding_forgot_password_email_sent_screen.dart';
 import 'package:pfe_project/widgets/app_bar/custom_app_bar.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_subtitle.dart';
@@ -6,16 +11,47 @@ import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
 
-// ignore_for_file: must_be_immutable
-class OnboardingForgotPasswordScreen extends StatelessWidget {
-  OnboardingForgotPasswordScreen({Key? key})
-      : super(
-          key: key,
-        );
+class OnboardingForgotPasswordScreen extends StatefulWidget {
+  const OnboardingForgotPasswordScreen({super.key});
 
+  @override
+  State<OnboardingForgotPasswordScreen> createState() =>
+      _OnboardingForgotPasswordScreenState();
+}
+
+class _OnboardingForgotPasswordScreenState
+    extends State<OnboardingForgotPasswordScreen> {
   TextEditingController emailController = TextEditingController();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void _resetPassword() async {
+    try {
+      await _auth.sendPasswordResetEmail(email: emailController.text);
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: 'Success',
+        desc: 'Password reset email sent. Check your inbox.',
+        btnOkOnPress: () {},
+        btnOkText: "Ok",
+      ).show();
+      onTapContinue(context);
+    } catch (e) {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Error',
+        desc: 'Failed to send password reset email. Please try again later.',
+        btnCancelOnPress: () {},
+        btnCancelText: "Ok",
+      ).show();
+      print('Failed to send password reset email: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +93,21 @@ class OnboardingForgotPasswordScreen extends StatelessWidget {
                       hintText: "Email",
                       textInputAction: TextInputAction.done,
                       textInputType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please fill the email';
+                        }
+                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(height: 32.v),
                     CustomElevatedButton(
                       text: "Continue",
                       onPressed: () {
-                        onTapContinue(context);
+                        _resetPassword();
                       },
                     ),
                     SizedBox(height: 5.v)
@@ -98,7 +143,6 @@ class OnboardingForgotPasswordScreen extends StatelessWidget {
 
   /// Navigates to the onboardingForgotPasswordEmailSentScreen when the action is triggered.
   onTapContinue(BuildContext context) {
-    Navigator.pushNamed(
-        context, AppRoutes.onboardingForgotPasswordEmailSentScreen);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => OnboardingForgotPasswordEmailSentScreen(email: emailController.text)));
   }
 }

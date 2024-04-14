@@ -1,81 +1,196 @@
-import 'package:pfe_project/widgets/custom_icon_button.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:pfe_project/main.dart';
+import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:pfe_project/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pfe_project/widgets/image_type/image_type.dart';
+import 'dart:io';
 
-// ignore_for_file: must_be_immutable
-class ProfilePage extends StatelessWidget {
-  ProfilePage({Key? key})
-      : super(
-          key: key,
-        );
+import '../../widgets/custom_icon_button.dart';
 
-  TextEditingController mohamedController = TextEditingController();
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
-  TextEditingController mohamedController1 = TextEditingController();
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
-  TextEditingController yassineController = TextEditingController();
+class _ProfilePageState extends State<ProfilePage> {
+  TextEditingController pseudoNameController = TextEditingController();
+
+  TextEditingController prenomController = TextEditingController();
+
+  TextEditingController nomController = TextEditingController();
 
   TextEditingController emailController = TextEditingController();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController telephoneController = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+
+  bool loading = false;
+String documentId= '';
+  bool enablePseudoName = false;
+  bool enablePrenom = false;
+  bool enableNom = false;
+  bool enablePhoneNumber = false;
+  bool enableEmail = false;
+   String prenom ='';
+   String nom ='';
+   String imagePath ='';
+   late String userId ;
+  bool imageChanged = false;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = sharedPref!.getString('userId')!;
+    fetchData(userId);
+  }
+
+  Future<void> fetchData(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('user')
+          .where('userId', isEqualTo: userId)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+       pseudoNameController.text = userData['username'] as String;
+        nomController.text = userData['name'] as String;
+        prenomController.text = userData['familyName'] as String;
+        telephoneController.text = userData['phoneNumber'];
+        emailController.text = userData['email'] as String;
+        imagePath = userData['photo_url'] as String;
+        nom = userData['name'] as String;
+        prenom = userData['familyName'] as String;
+        setState(() {
+
+        });
+      } else {
+        return null; // User document not found
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      return null; // Handle error fetching user profile
+    }
+  }
+
+  Future<void> _setImage() async {
+    final file = await FilePicker.platform.pickFiles(type: FileType.image);
+    if (file != null) {
+      setState(() {
+        imageChanged = true;
+        imagePath = file.paths.first!;
+      });
+    }
+  }
+
+  Future<String?> _uploadImageToFirebaseStorage(File imageFile) async {
+    try {
+      // Create a reference to the location you want to upload to in Firebase Storage
+      final Reference storageReference =
+      FirebaseStorage.instance.ref().child('images').child(imageFile.path);
+
+      // Upload the file to Firebase Storage
+      final TaskSnapshot uploadTask = await storageReference.putFile(imageFile);
+
+      // Get the download URL of the uploaded file
+      final String downloadUrl = await uploadTask.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image to Firebase Storage: $e');
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return WillPopScope(
+      onWillPop: ()  async{
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, AppRoutes.homepage);
+        return false;
+      },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: SizedBox(
-          width: SizeUtils.width,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Container(
-                width: double.maxFinite,
-                decoration: AppDecoration.fillOnErrorContainer,
-                child: Column(
-                  children: [
-                    _buildThirtyFour(context),
-                    Divider(),
-                    SizedBox(height: 49.v),
-                    _buildThirtySeven(context),
-                    SizedBox(height: 14.v),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 36.h),
-                        child: Text(
-                          "Prénom",
-                          style: CustomTextStyles.titleSmallGray700,
+        body:
+        Stack(
+          children: [
+
+            SizedBox(
+              width: SizeUtils.width,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Container(
+                    width: double.maxFinite,
+                    decoration: AppDecoration.fillOnErrorContainer,
+                    child: Column(
+                      children: [
+                        _buildThirtyFour(context),
+                        const Divider(),
+                        SizedBox(height: 49.v),
+                        _buildThirtySeven(context),
+                        SizedBox(height: 14.v),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 36.h),
+                            child: Text(
+                              "Prénom",
+                              style: CustomTextStyles.titleSmallGray700,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    _buildMohamed(context),
-                    SizedBox(height: 15.v),
-                    _buildThirtySix(context),
-                    SizedBox(height: 16.v),
-                    _buildThirtyThree(context),
-                    SizedBox(height: 14.v),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 36.h),
-                        child: Text(
-                          "Adresse email",
-                          style: CustomTextStyles.titleSmallGray700,
+                        _buildMohamed(context),
+                        SizedBox(height: 15.v),
+                        _buildThirtySix(context),
+                        SizedBox(height: 16.v),
+                        _buildThirtyThree(context),
+                        SizedBox(height: 16.v),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 36.h),
+                            child: Text(
+                              "Adresse email",
+                              style: CustomTextStyles.titleSmallGray700,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 30.v),
+                        _buildEmail(context),
+                        SizedBox(height: 30.v),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: CustomElevatedButton(
+                            height: 61.v,
+                            text: "Save",
+                            onPressed: () {
+                              _saveToFirebase();
+                            },
+                          ),
+                        )
+                      ],
                     ),
-                    SizedBox(height: 91.v),
-                    _buildEmail(context),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+            loading
+                ? const Center(child: CircularProgressIndicator(color: Colors.red,)) : SizedBox(),
+          ],
         ),
       ),
     );
@@ -101,14 +216,24 @@ class ProfilePage extends StatelessWidget {
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
-                CustomImageView(
-                  imagePath: ImageConstant.myImg,
+                imageChanged ? ImageTypeView(
+                  imagePath: imagePath,
                   height: 115.adaptSize,
                   width: 115.adaptSize,
                   radius: BorderRadius.circular(
                     57.h,
                   ),
                   alignment: Alignment.center,
+                  imageType: 'file',
+                ) : ImageTypeView(
+                  imagePath: imagePath,
+                  height: 115.adaptSize,
+                  width: 115.adaptSize,
+                  radius: BorderRadius.circular(
+                    57.h,
+                  ),
+                  alignment: Alignment.center,
+                  imageType: 'network',
                 ),
                 Padding(
                   padding: EdgeInsets.only(
@@ -116,6 +241,9 @@ class ProfilePage extends StatelessWidget {
                     bottom: 4.v,
                   ),
                   child: CustomIconButton(
+                    onTap: () async {
+                      await _setImage();
+                    },
                     height: 22.adaptSize,
                     width: 22.adaptSize,
                     padding: EdgeInsets.all(2.h),
@@ -141,17 +269,13 @@ class ProfilePage extends StatelessWidget {
                 SizedBox(
                   width: 121.h,
                   child: Text(
-                    "Izeddin\nSinan",
+                    "$prenom\n$nom",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: CustomTextStyles.headlineSmallBlack900,
                   ),
                 ),
                 SizedBox(height: 5.v),
-                Text(
-                  "# 1200",
-                  style: CustomTextStyles.titleSmallGray500,
-                ),
               ],
             ),
           ),
@@ -170,14 +294,23 @@ class ProfilePage extends StatelessWidget {
         children: [
           CustomTextFormField(
             width: 318.h,
-            controller: mohamedController,
-            hintText: "Izeddin_123",
-            hintStyle: theme.textTheme.titleLarge!,
+            enable: enablePseudoName,
+            textStyle: CustomTextStyles.titleSmallGray700,
+            controller: pseudoNameController,
+            hintText: "pseudo name",
+            hintStyle: theme.textTheme.bodyLarge!,
             alignment: Alignment.bottomCenter,
+
             contentPadding: EdgeInsets.symmetric(
               horizontal: 30.h,
               vertical: 9.v,
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please fill the pseudo name';
+              }
+              return null;
+            },
           ),
           Align(
             alignment: Alignment.topLeft,
@@ -192,6 +325,11 @@ class ProfilePage extends StatelessWidget {
               right: 4.h,
             ),
             child: CustomIconButton(
+              onTap: () {
+                setState(() {
+                  enablePseudoName = true;
+                });
+              },
               height: 20.adaptSize,
               width: 20.adaptSize,
               padding: EdgeInsets.all(2.h),
@@ -217,18 +355,31 @@ class ProfilePage extends StatelessWidget {
         children: [
           CustomTextFormField(
             width: 318.h,
-            controller: mohamedController1,
-            hintText: "Izeddin",
-            hintStyle: theme.textTheme.titleLarge!,
+            enable: enablePrenom,
+            controller: prenomController,
+            textStyle: CustomTextStyles.titleSmallGray700,
+            hintText: "prenom",
+            hintStyle: theme.textTheme.bodyLarge!,
             alignment: Alignment.bottomCenter,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 30.h,
               vertical: 9.v,
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please fill the prenom';
+              }
+              return null;
+            },
           ),
           Padding(
             padding: EdgeInsets.only(right: 4.h),
             child: CustomIconButton(
+              onTap: () {
+                setState(() {
+                  enablePrenom = true;
+                });
+              },
               height: 20.adaptSize,
               width: 20.adaptSize,
               padding: EdgeInsets.all(2.h),
@@ -254,14 +405,22 @@ class ProfilePage extends StatelessWidget {
         children: [
           CustomTextFormField(
             width: 318.h,
-            controller: yassineController,
-            hintText: "Sinan",
-            hintStyle: theme.textTheme.titleLarge!,
+            enable: enableNom,
+            textStyle: CustomTextStyles.titleSmallGray700,
+            controller: nomController,
+            hintText: sharedPref!.getString('name') ?? 'nom',
+            hintStyle: theme.textTheme.bodyLarge!,
             alignment: Alignment.bottomCenter,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 30.h,
               vertical: 9.v,
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please fill the nom';
+              }
+              return null;
+            },
           ),
           Align(
             alignment: Alignment.topLeft,
@@ -276,6 +435,11 @@ class ProfilePage extends StatelessWidget {
               right: 4.h,
             ),
             child: CustomIconButton(
+              onTap: () {
+                setState(() {
+                  enableNom = true;
+                });
+              },
               height: 20.adaptSize,
               width: 20.adaptSize,
               padding: EdgeInsets.all(2.h),
@@ -301,18 +465,25 @@ class ProfilePage extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 79.h,
-                vertical: 8.v,
+            child: CustomTextFormField(
+              width: 318.h,
+              enable: enablePhoneNumber,
+              textInputType: TextInputType.number,
+              textStyle: CustomTextStyles.titleSmallGray700,
+              controller: telephoneController,
+              hintText: "0600000000",
+              hintStyle: theme.textTheme.bodyLarge!,
+              alignment: Alignment.bottomCenter,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 30.h,
+                vertical: 9.v,
               ),
-              decoration: AppDecoration.outlineGray10002.copyWith(
-                borderRadius: BorderRadiusStyle.circleBorder17,
-              ),
-              child: Text(
-                "+212 000-000000",
-                style: theme.textTheme.titleLarge,
-              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please fill the telephone nombre';
+                }
+                return null;
+              },
             ),
           ),
           Align(
@@ -328,6 +499,11 @@ class ProfilePage extends StatelessWidget {
               right: 4.h,
             ),
             child: CustomIconButton(
+              onTap: () {
+                setState(() {
+                  enablePhoneNumber = true;
+                });
+              },
               height: 20.adaptSize,
               width: 20.adaptSize,
               padding: EdgeInsets.all(2.h),
@@ -353,9 +529,11 @@ class ProfilePage extends StatelessWidget {
         children: [
           CustomTextFormField(
             width: 318.h,
+            enable: enableEmail,
             controller: emailController,
-            hintText: "izeddine1937@gmail.com",
-            hintStyle: theme.textTheme.titleLarge!,
+            hintText: sharedPref!.getString('email'),
+            textStyle: CustomTextStyles.titleSmallGray700,
+            hintStyle: theme.textTheme.bodyLarge!,
             textInputAction: TextInputAction.done,
             textInputType: TextInputType.emailAddress,
             alignment: Alignment.bottomCenter,
@@ -363,10 +541,25 @@ class ProfilePage extends StatelessWidget {
               horizontal: 30.h,
               vertical: 9.v,
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please fill the email';
+              }
+              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  .hasMatch(value)) {
+                return 'Please enter a valid email';
+              }
+              return null;
+            },
           ),
           Padding(
             padding: EdgeInsets.only(right: 4.h),
             child: CustomIconButton(
+              onTap: () {
+                setState(() {
+                  enableEmail = true;
+                });
+              },
               height: 20.adaptSize,
               width: 20.adaptSize,
               padding: EdgeInsets.all(2.h),
@@ -380,5 +573,75 @@ class ProfilePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+
+  Future<String> getDocumentIdByUserId(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('user')
+          .where('userId', isEqualTo: userId)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+
+        return querySnapshot.docs.first.id;
+      } else {
+        return ''; // User document not found
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      return ''; // Handle error fetching user profile
+    }
+  }
+
+
+
+  Future<void> _saveToFirebase() async {
+    setState(() {
+      loading = true;
+    });
+    if (_formKey.currentState!.validate()) {
+      // Validate succeeded, proceed with saving to Firebase
+        var photoUrl = imageChanged ? await _uploadImageToFirebaseStorage(File(imagePath)) : imagePath;
+        // Reference to the document to be updated
+        final String getDocumentId = await getDocumentIdByUserId(userId);
+        final userDocRef = FirebaseFirestore.instance.collection('user').doc(getDocumentId);
+        await userDocRef.update({
+          'username': pseudoNameController.text,
+          'name': prenomController.text,
+          'familyName': nomController.text,
+          'phoneNumber': telephoneController.text,
+          'email': emailController.text,
+          'photo_url': photoUrl
+        });
+     setState(() {
+       enableEmail = false;
+       enablePhoneNumber = false;
+       enableNom = false;
+       enablePrenom = false;
+       enablePseudoName = false;
+     });
+        sharedPref!.setString('imagePath', photoUrl!) ;
+      //ignore: use_build_context_synchronously
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: 'Done',
+        desc: 'Your Data has been updated successfully',
+        btnOkOnPress: () {
+
+        },
+        btnOkText: "Ok",
+      ).show();
+      setState(() {
+        loading = false;
+      });
+    }else {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 }

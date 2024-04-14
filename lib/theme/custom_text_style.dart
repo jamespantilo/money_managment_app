@@ -126,13 +126,13 @@ class CustomTextStyles {
         fontWeight: FontWeight.w600,
       );
   static get titleMediumff212224 => theme.textTheme.titleMedium!.copyWith(
-        color: Color(0XFF212224),
+        color: const Color(0XFF212224),
       );
   static get titleMediumff292b2d => theme.textTheme.titleMedium!.copyWith(
-        color: Color(0XFF292B2D),
+        color: const Color(0XFF292B2D),
       );
   static get titleMediumff7e3dff => theme.textTheme.titleMedium!.copyWith(
-        color: Color(0XFF7E3DFF),
+        color: const Color(0XFF7E3DFF),
       );
   static get titleSmallBlack900 => theme.textTheme.titleSmall!.copyWith(
         color: appTheme.black900,

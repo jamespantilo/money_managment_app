@@ -1,3 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:pfe_project/presentation/income_new_screen/drop_down_widget/categories_drop_down.dart';
+import 'package:pfe_project/presentation/income_new_screen/drop_down_widget/drop_down_widget.dart';
 import 'package:pfe_project/widgets/app_bar/custom_app_bar.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pfe_project/widgets/app_bar/appbar_title.dart';
@@ -7,81 +14,119 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
+import 'package:pfe_project/widgets/widget_dropdown.dart';
 
-// ignore_for_file: must_be_immutable
-class IncomeNewScreen extends StatelessWidget {
-  IncomeNewScreen({Key? key})
-      : super(
-          key: key,
-        );
+import '../../main.dart';
 
+class IncomeNewScreen extends StatefulWidget {
+  const IncomeNewScreen({super.key});
+
+
+  @override
+  State<IncomeNewScreen> createState() => _IncomeNewScreenState();
+}
+
+class _IncomeNewScreenState extends State<IncomeNewScreen> {
   TextEditingController inputFieldController = TextEditingController();
+  TextEditingController howMuchController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController inputFieldController1 = TextEditingController();
 
-  List<String> dropdownItemList = ["Date 1", "Date 2", "Date 3"];
+  List<Widget> categoryDropdownItemList = [];
+  List<String> dateDropdownItemList = ["Date 1", "Date 2", "Date 3"];
+  String selectedCategory = '';
+
+
+  DateTime? _selectedDate;
+  bool saved = false;
+
+  // Function to show date picker and update selected date
+  Future<void> _selectDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(), // Use selected date or current date
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: _buildAppBar(context),
-        body: Container(
-          color: appTheme.teal500,
-          width: double.maxFinite,
-          //padding: EdgeInsets.symmetric(vertical: 4.v),
-          child: Column(
-            children: [
-              SizedBox(height: 63.v),
-              Expanded(
-                child: Container(
-                  decoration: AppDecoration.fillTeal,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Opacity(
-                        opacity: 0.64,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 26.h),
-                          child: Text(
-                            "How much?",
-                            style: CustomTextStyles.titleMediumGray50SemiBold18,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12.v),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25.h),
-                        child: Row(
-                          children: [
-                            Text(
-                              "1",
-                              style: theme.textTheme.displayLarge,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5.h),
+    return WillPopScope(
+      onWillPop: ()  async{
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, AppRoutes.homepage);
+        return false;
+      },
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: _buildAppBar(context),
+          body: Form(
+            key: _formKey,
+            child: Container(
+              color: appTheme.teal500,
+              child: Column(
+                children: [
+                  SizedBox(height: 63.v),
+                  Expanded(
+                    child: Container(
+                      decoration: AppDecoration.fillTeal,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Opacity(
+                            opacity: 0.64,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 26.h),
                               child: Text(
-                                "DH",
-                                style: theme.textTheme.displayLarge,
+                                "How much?",
+                                style: CustomTextStyles.titleMediumGray50SemiBold18,
                               ),
-                            )
-                          ],
-                        ),
+                            ),
+                          ),
+                          SizedBox(height: 12.v),
+                          Padding(
+                            padding: EdgeInsets.only(left: 25.h),
+                            child: Row(
+                              children: [
+                                Text(
+                                  saved ? howMuchController.text.toString() : '0',
+                                  style: theme.textTheme.displayLarge,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 5.h),
+                                  child: Text(
+                                    "DH",
+                                    style: theme.textTheme.displayLarge,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          _buildFrame(context)
+                        ],
                       ),
-                      Spacer(),
-                      _buildFrame(context)
-                    ],
-                  ),
-                ),
-              )
-            ],
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
+
+          bottomNavigationBar: _buildSave(context),
         ),
-        bottomNavigationBar: _buildSave(context),
       ),
     );
   }
+
 
   /// Section Widget
   PreferredSizeWidget _buildAppBar(BuildContext context) {
@@ -120,47 +165,102 @@ class IncomeNewScreen extends StatelessWidget {
         children: [
           SizedBox(height: 29.v),
           Padding(
-            padding: EdgeInsets.only(
-              left: 13.h,
-              right: 15.h,
-            ),
-            child: CustomTextFormField(
-              controller: inputFieldController,
-              hintText: "Source",
-              hintStyle: CustomTextStyles.bodyLargeGray800,
-              //borderDecoration: TextFormFieldStyleHelper.outlineGrayTL161,
-            ),
-          ),
-          SizedBox(height: 16.v),
-          Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.h),
             child: CustomTextFormField(
-              controller: inputFieldController1,
-              hintText: "Description",
+              controller: howMuchController,
+              textStyle: CustomTextStyles.titleSmallGray700,
+              hintText: "Amount",
+
               hintStyle: CustomTextStyles.bodyLargeGray800,
               textInputAction: TextInputAction.done,
+              textInputType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please fill the the amount';
+                }
+                return null;
+              },
             ),
           ),
-          SizedBox(height: 20.v),
+          SizedBox(height: 29.v),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.h),
-            child: CustomDropDown(
+            padding: EdgeInsets.symmetric(horizontal: 5.h),
+            child: CategoryCustomDropDown(
+              onCategorySelected: (value) => setState(() => selectedCategory = value),
               icon: CustomImageView(
                 imagePath:
-                    ImageConstant.imgMagiconsGlyphArrowArrowdown2Black900,
+                ImageConstant.imgMagiconsGlyphArrowArrowdown2Black900,
                 height: 32.adaptSize,
                 width: 32.adaptSize,
               ),
-              hintText: "Date",
-              items: dropdownItemList,
+              hintText: "Category",
+              items: dateDropdownItemList,
               contentPadding: EdgeInsets.only(
                 left: 16.h,
                 top: 18.v,
                 bottom: 18.v,
               ),
-              borderDecoration: DropDownStyleHelper.outlineGrayTL16,
+              borderDecoration: DropDownStyleHelper1.outlineGrayTL16,
               filled: true,
               fillColor: theme.colorScheme.onErrorContainer,
+              onChanged: (value) {
+                setState(() {
+                  value;
+                });
+              },
+            ),
+          ),
+          // Container(
+          //   width:  double.maxFinite,
+          //   margin: const EdgeInsets.symmetric(horizontal: 16),
+          //   child: CategoryDropdown(
+          //
+          //     userCategories: userCategories,
+          //     initialSelection: "Shopping", // Set initial selection if desired
+          //   ),
+          // ),
+          SizedBox(height: 16.v),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.h),
+            child: CustomTextFormField(
+              controller: inputFieldController1,
+              maxLines: 2,
+              textStyle: CustomTextStyles.titleSmallGray700,
+              hintText: "Description",
+              hintStyle: CustomTextStyles.bodyLargeGray800,
+              textInputAction: TextInputAction.done,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please fill the the description';
+                }
+                return null;
+              },
+            ),
+          ),
+          SizedBox(height: 20.v),
+          InkWell(
+            onTap: _selectDate,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.h),
+              child: CustomDropDown(
+                icon: CustomImageView(
+                  imagePath:
+                      ImageConstant.imgMagiconsGlyphArrowArrowdown2Black900,
+                  height: 32.adaptSize,
+                  width: 32.adaptSize,
+                ),
+                hintText: _selectedDate == null ? 'Select Date' : DateFormat('dd-MM-yyyy').format(_selectedDate!.toUtc()),
+                hintStyle: _selectedDate != null ? CustomTextStyles.titleSmallGray700 : null,
+                //items: dateDropdownItemList,
+                contentPadding: EdgeInsets.only(
+                  left: 16.h,
+                  top: 18.v,
+                  bottom: 18.v,
+                ),
+                borderDecoration: DropDownStyleHelper.outlineGrayTL16,
+                filled: true,
+                fillColor: theme.colorScheme.onErrorContainer,
+              ),
             ),
           ),
           SizedBox(height: 30.v),
@@ -171,41 +271,28 @@ class IncomeNewScreen extends StatelessWidget {
               decoration: AppDecoration.outlineGray100022.copyWith(
                 borderRadius: BorderRadiusStyle.circleBorder17,
               ),
-              child: DottedBorder(
-                color: appTheme.gray10002,
-                padding: EdgeInsets.only(
-                  left: 1.h,
-                  top: 1.v,
-                  right: 1.h,
-                  bottom: 1.v,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 89.h,
+                  vertical: 8.v,
                 ),
-                strokeWidth: 1.h,
-                radius: Radius.circular(16),
-                borderType: BorderType.RRect,
-                dashPattern: [8, 8],
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 89.h,
-                    vertical: 8.v,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 32.adaptSize,
-                        width: 32.adaptSize,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 32.adaptSize,
+                      width: 32.adaptSize,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 10.h,
+                        top: 9.v,
+                        bottom: 5.v,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 10.h,
-                          top: 9.v,
-                          bottom: 5.v,
-                        ),
-                        child: Container(),
-                      )
-                    ],
-                  ),
+                      child: Container(),
+                    )
+                  ],
                 ),
               ),
             ),
@@ -224,14 +311,75 @@ class IncomeNewScreen extends StatelessWidget {
         height: 66.v,
         text: "Save",
         onPressed: () {
-          onTapSave(context);
+
+          saved ? null : onTapSave(context);
         },
       ),
     );
   }
 
   /// Navigates to the onboardingOnboardingThirteenScreen when the action is triggered.
-  onTapSave(BuildContext context) {
-    Navigator.pop(context);
+  onTapSave(BuildContext context) async {
+    if (_formKey.currentState!.validate() && selectedCategory.isNotEmpty && _selectedDate != null) {
+    try {
+      final String incomeDate = DateFormat('dd-MM-yyyy').format(_selectedDate!.toUtc());
+      int amount = int.parse(howMuchController.text);
+
+      await FirebaseFirestore.instance.collection('incomes').add({
+        'userId': userId,
+        'incomeAmount': amount,
+        'incomeCategory': selectedCategory,
+        'incomeDate': incomeDate,
+        'incomeDescription': inputFieldController1.text,
+      });
+      setState(() {
+        saved = true;
+      });
+
+
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: 'Done',
+        desc: 'Income saved successfully.',
+        btnOkOnPress: () {},
+        btnOkText: "Ok",
+      ).show();
+    } catch (e) {
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Failed',
+        desc: 'Failed to save income. Please try again later.',
+        btnCancelOnPress: () {},
+        btnCancelText: "Ok",
+      ).show();
+    }
+  }else {
+      if(_selectedDate == null && inputFieldController1.text.isNotEmpty && howMuchController.text.isNotEmpty) {
+        await AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Failed',
+          desc: 'Please choose a date.',
+          btnCancelOnPress: () {},
+          btnCancelText: "Ok",
+        ).show();
+      }
+      if(selectedCategory.isEmpty && inputFieldController1.text.isNotEmpty && howMuchController.text.isNotEmpty) {
+        await AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'Failed',
+          desc: 'Please choose a category.',
+          btnCancelOnPress: () {},
+          btnCancelText: "Ok",
+        ).show();
+      }
+    }
   }
 }

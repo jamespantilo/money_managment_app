@@ -83,7 +83,7 @@ class CategorieContainerScreen extends StatelessWidget {
       case AppRoutes.categoriePage:
         return const CategoriePage();
       case AppRoutes.profilePage:
-        return ProfilePage();
+        return const ProfilePage();
       default:
         return const DefaultWidget();
     }

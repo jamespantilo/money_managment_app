@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pfe_project/presentation/categorie_page/categorie_page.dart';
 import 'package:pfe_project/presentation/financial_report_detail_pie_expense_category_page/financial_report_detail_pie_expense_category_page.dart';
 import 'package:pfe_project/presentation/homepage/homepage.dart';
+import 'package:pfe_project/presentation/my_categories/my_categories.dart';
 import 'package:pfe_project/presentation/profile_page/profile_page.dart';
+import 'package:pfe_project/presentation/set_profile/set_profile.dart';
 import '../presentation/onboarding_sign_up_verfication_screen/onboarding_sign_up_verfication_screen.dart';
 import '../presentation/onboarding_reset_password_screen/onboarding_reset_password_screen.dart';
 import '../presentation/onboarding_forgot_password_screen/onboarding_forgot_password_screen.dart';
@@ -24,6 +26,9 @@ import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 class AppRoutes {
   static const String onboardingSignUpVerficationScreen =
       '/onboarding_sign_up_verfication_screen';
+
+  static const String mycategories =
+      '/my_categories';
 
   static const String onboardingResetPasswordScreen =
       '/onboarding_reset_password_screen';
@@ -63,6 +68,8 @@ class AppRoutes {
 
   static const String profilePage = '/profile_page';
 
+  static const String setprofilePage = '/set_profile_page';
+
   static const String contactScreen = '/contact_screen';
 
   static const String addCategorieScreen = '/add_categorie_screen';
@@ -82,31 +89,35 @@ class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
     onboardingSignUpVerficationScreen: (context) =>
         const OnboardingSignUpVerficationScreen(),
-    onboardingResetPasswordScreen: (context) => OnboardingResetPasswordScreen(),
+    mycategories: (context) =>
+     MyCategoriesPage(),
+    onboardingResetPasswordScreen: (context) =>
+        const OnboardingResetPasswordScreen(),
     onboardingForgotPasswordScreen: (context) =>
-        OnboardingForgotPasswordScreen(),
+        const OnboardingForgotPasswordScreen(),
     onboardingSetupPinTwoScreen: (context) =>
         const OnboardingSetupPinTwoScreen(),
-    onboardingSignUpScreen: (context) => OnboardingSignUpScreen(),
-    onboardingLoginScreen: (context) => OnboardingLoginScreen(),
+    onboardingSignUpScreen: (context) => const OnboardingSignUpScreen(),
+    onboardingLoginScreen: (context) => const OnboardingLoginScreen(),
     onboardingForgotPasswordEmailSentScreen: (context) =>
-        const OnboardingForgotPasswordEmailSentScreen(),
+        const OnboardingForgotPasswordEmailSentScreen(email: ''),
     financialReportDetailLineExpenseTransactionTabContainerScreen: (context) =>
         const FinancialReportDetailLineExpenseTransactionTabContainerScreen(),
     notificationNotificationScreen: (context) =>
         const NotificationNotificationScreen(),
     settingsSettingsScreen: (context) => const SettingsSettingsScreen(),
     menuPageScreen: (context) => const MenuPageScreen(),
-    contactScreen: (context) => ContactScreen(),
-    addCategorieScreen: (context) => AddCategorieScreen(),
+    contactScreen: (context) => const ContactScreen(),
+    addCategorieScreen: (context) => const AddCategorieScreen(),
     categorieContainerScreen: (context) => CategorieContainerScreen(),
     homepage: (context) => const HomePage(),
-    expenseNewScreen: (context) => ExpenseNewScreen(),
-    incomeNewScreen: (context) => IncomeNewScreen(),
+    expenseNewScreen: (context) => const ExpenseNewScreen(),
+    incomeNewScreen: (context) => const IncomeNewScreen(),
     appNavigationScreen: (context) => const AppNavigationScreen(),
     financialReportDetailPieExpenseCategoryPage: (context) =>
-        const FinancialReportDetailPieExpenseCategoryPage(),
+        const FinancialReportDetailPieExpenseCategoryPage(dataMap: {},incomes: [],expenses: []),
     categoriePage: (context) => const CategoriePage(),
-    profilePage: (context) => ProfilePage(),
+    profilePage: (context) => const ProfilePage(),
+    setprofilePage: (context) => const SetProfilePage(),
   };
 }
