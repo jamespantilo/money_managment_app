@@ -99,7 +99,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 36.h),
                                   child: Text(
-                                    "Prénom",
+                                    "First Name",
                                     style: CustomTextStyles.titleSmallGray700,
                                   ),
                                 ),
@@ -115,7 +115,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 36.h),
                                   child: Text(
-                                    "Adresse email",
+                                    "Email Address",
                                     style: CustomTextStyles.titleSmallGray700,
                                   ),
                                 ),
@@ -251,7 +251,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
             width: 318.h,
             textStyle: CustomTextStyles.titleSmallGray700,
             controller: pseudoNameController,
-            hintText: "pseudo name",
+            hintText: "Username",
             hintStyle: theme.textTheme.bodyLarge!,
             alignment: Alignment.bottomCenter,
             contentPadding: EdgeInsets.symmetric(
@@ -260,7 +260,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please fill the pseudo name';
+                return 'Please fill the Username';
               }
               return null;
             },
@@ -268,7 +268,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
           Align(
             alignment: Alignment.topLeft,
             child: Text(
-              "Pseudo",
+              "Username",
               style: CustomTextStyles.titleSmallGray700,
             ),
           ),
@@ -305,7 +305,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
             width: 318.h,
             controller: prenomController,
             textStyle: CustomTextStyles.titleSmallGray700,
-            hintText: "prenom",
+            hintText: "First Name",
             hintStyle: theme.textTheme.bodyLarge!,
             alignment: Alignment.bottomCenter,
             contentPadding: EdgeInsets.symmetric(
@@ -314,7 +314,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please fill the prenom';
+                return 'Please fill the First Name';
               }
               return null;
             },
@@ -349,7 +349,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
             width: 318.h,
             textStyle: CustomTextStyles.titleSmallGray700,
             controller: nomController,
-            hintText: sharedPref!.getString('name') ?? 'nom',
+            hintText: sharedPref!.getString('name') ?? 'Family Name',
             hintStyle: theme.textTheme.bodyLarge!,
             alignment: Alignment.bottomCenter,
             contentPadding: EdgeInsets.symmetric(
@@ -358,7 +358,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please fill the nom';
+                return 'Please fill the Family Name';
               }
               return null;
             },
@@ -366,7 +366,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
           Align(
             alignment: Alignment.topLeft,
             child: Text(
-              "Nom",
+              "Family Name",
               style: CustomTextStyles.titleSmallGray700,
             ),
           ),
@@ -415,7 +415,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please fill the telephone nombre';
+                  return 'Please fill the Phone Number';
                 }
                 return null;
               },
@@ -424,7 +424,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
           Align(
             alignment: Alignment.topLeft,
             child: Text(
-              "Numéro de téléphone",
+              "Phone Number",
               style: CustomTextStyles.titleSmallGray700,
             ),
           ),
@@ -472,11 +472,11 @@ class _SetProfilePageState extends State<SetProfilePage> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please fill the email';
+                return 'Please fill the Email Address';
               }
               if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                   .hasMatch(value)) {
-                return 'Please enter a valid email';
+                return 'Please enter a valid Email Address';
               }
               return null;
             },

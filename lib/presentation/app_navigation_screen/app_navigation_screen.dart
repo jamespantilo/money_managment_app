@@ -182,7 +182,7 @@ class AppNavigationScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: 20.h),
               child: Text(
-                "Check your app's UI from the below demo screens of your app.",
+                "Check your app's UI from the below demo presentation of your app.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: const Color(0XFF888888),

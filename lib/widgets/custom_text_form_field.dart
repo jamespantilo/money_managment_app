@@ -25,7 +25,7 @@ class CustomTextFormField extends StatelessWidget {
     this.borderDecoration,
     this.fillColor,
     this.filled = true,
-    this.validator, this.enable, this.inisialValue,
+    this.validator, this.enable, this.inisialValue, this.onAmountChange,
   }) : super(
           key: key,
         );
@@ -78,6 +78,9 @@ class CustomTextFormField extends StatelessWidget {
 
   final FormFieldValidator<String>? validator;
 
+  final Function(int)? onAmountChange;
+
+
   @override
   Widget build(BuildContext context) {
     return alignment != null
@@ -97,6 +100,15 @@ class CustomTextFormField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode,
 initialValue: inisialValue ?? null,
+          onChanged: (value) {
+            if (value != null) {
+              // Call the provided callback function with the selected value
+              onAmountChange!(int.parse(value));
+            }
+            if(value.isEmpty) {
+              onAmountChange!(0);
+            }
+          },
 
           onTapOutside: (event) {
             if (focusNode != null) {

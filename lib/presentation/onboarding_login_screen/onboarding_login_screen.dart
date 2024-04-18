@@ -320,6 +320,7 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
         fetchCategoriesByUserId().then((_) async {
           await fetchAndMergeCategories();
         });
+        sharedPref!.getBool('notification') ?? sharedPref!.setBool('notification', false);
         int? userProfile = await fetchUserProfile(userId1);
         if (userProfile != null) {
           await sharedPref!.setInt('set_profile', userProfile);
@@ -345,6 +346,10 @@ class _OnboardingLoginScreenState extends State<OnboardingLoginScreen> {
       } catch (e) {
         // Sign-in failed, handle error
         debugPrint("Failed to sign in: $e");
+
+      setState(() {
+        loading = false;
+      });
         AwesomeDialog(
           context: context,
           dialogType: DialogType.error,

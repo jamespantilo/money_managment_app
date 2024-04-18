@@ -53,6 +53,10 @@ class _ContactScreenState extends State<ContactScreen> {
                     Padding(
                       padding: EdgeInsets.only(right: 15.h),
                       child: CustomTextFormField(
+                        onAmountChange: (value) => setState(() {
+
+
+                        }),
                         controller: emailController,
                         hintText: "Address Email",
                         textInputType: TextInputType.emailAddress,
@@ -73,6 +77,10 @@ class _ContactScreenState extends State<ContactScreen> {
                     Padding(
                       padding: EdgeInsets.only(right: 15.h),
                       child: CustomTextFormField(
+                        onAmountChange: (value) => setState(() {
+
+
+                        }),
                         controller: messageController,
                         hintText: "Message",
                         hintStyle: CustomTextStyles.bodyLargeGray800,

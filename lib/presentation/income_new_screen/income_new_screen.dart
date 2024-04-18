@@ -36,6 +36,7 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
   List<Widget> categoryDropdownItemList = [];
   List<String> dateDropdownItemList = ["Date 1", "Date 2", "Date 3"];
   String selectedCategory = '';
+  int amountValue = 0;
 
 
   DateTime? _selectedDate;
@@ -97,7 +98,7 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
                             child: Row(
                               children: [
                                 Text(
-                                  saved ? howMuchController.text.toString() : '0',
+                                  '$amountValue',
                                   style: theme.textTheme.displayLarge,
                                 ),
                                 Padding(
@@ -137,6 +138,7 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
       leading: AppbarLeadingImage(
         onTap: () {
           Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, AppRoutes.homepage);
         },
         imagePath: ImageConstant.imgMagiconsGlyphPrimary,
         margin: EdgeInsets.only(
@@ -155,7 +157,7 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
   /// Section Widget
   Widget _buildFrame(BuildContext context) {
     return Container(
-      width: 389.h,
+      width: MediaQuery.sizeOf(context).width,
       padding: EdgeInsets.symmetric(horizontal: 15.h),
       decoration: AppDecoration.fillOnErrorContainer.copyWith(
         borderRadius: BorderRadiusStyle.customBorderTL32,
@@ -167,6 +169,9 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.h),
             child: CustomTextFormField(
+              onAmountChange: (value) => setState(() {
+amountValue = value;
+              }),
               controller: howMuchController,
               textStyle: CustomTextStyles.titleSmallGray700,
               hintText: "Amount",
@@ -184,7 +189,7 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
           ),
           SizedBox(height: 29.v),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5.h),
+            padding: EdgeInsets.symmetric(horizontal: 15.h),
             child: CategoryCustomDropDown(
               onCategorySelected: (value) => setState(() => selectedCategory = value),
               icon: CustomImageView(
@@ -223,6 +228,10 @@ class _IncomeNewScreenState extends State<IncomeNewScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.h),
             child: CustomTextFormField(
+              onAmountChange: (value) => setState(() {
+                amountValue = value ;
+
+              }),
               controller: inputFieldController1,
               maxLines: 2,
               textStyle: CustomTextStyles.titleSmallGray700,

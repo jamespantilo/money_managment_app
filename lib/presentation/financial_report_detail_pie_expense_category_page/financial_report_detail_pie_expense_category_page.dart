@@ -123,7 +123,7 @@ class FinancialReportDetailPieExpenseCategoryPageState
 
   Map<String, double> _calculatePercentage(Map<String, int> totalAmountPerCategory) {
     int totalAmount = totalAmountPerCategory.values.reduce((a, b) => a + b);
-    return totalAmountPerCategory.map((category, amount) => MapEntry(category, amount / totalAmount));
+    return totalAmountPerCategory.map((category, amount) => MapEntry(category, (amount / totalAmount) * 100));
   }
 
   List<Color> _generateColors(List<String> categories) {
@@ -255,18 +255,21 @@ class FinancialReportDetailPieExpenseCategoryPageState
               SizedBox(height: MediaQuery.sizeOf(context).height / 2 - 250,child:
               categoryInfo.isEmpty ? const Center(child: Text('No data found'),) :
               PieChart(
+
                 dataMap:changeButton ? _calculatePercentage(calculateIncomesTotalAmountPerCategory(filterdIncomes)) : _calculatePercentage(calculateExpensesTotalAmountPerCategory(filterdExpenses)),
                 animationDuration: const Duration(milliseconds: 800),
                 chartLegendSpacing: 32,
-                chartRadius: MediaQuery.of(context).size.width / 2.7,
+                  chartRadius: MediaQuery.of(context).size.width / 1.5,
                 colorList: _generateColors(widget.dataMap.keys.toList()),
                 legendOptions: const LegendOptions(
                   legendPosition: LegendPosition.right,
                   showLegends: true,
                   legendTextStyle: TextStyle(fontSize: 12),
                 ),
+
                 chartType: ChartType.disc,
-              ),),
+              )
+                ,),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(left: 12, right: 12,bottom: 15),
@@ -409,7 +412,7 @@ class FinancialReportDetailPieExpenseCategoryPageState
                                  margin: const EdgeInsets.all(8.0),
                                  child: LinearProgressIndicator(
                                    borderRadius: BorderRadius.circular(20),
-                                   value: categoryInfo[index].percentage, // Update progress value
+                                   value: categoryInfo[index].percentage / 100, // Update progress value
                                    valueColor:  AlwaysStoppedAnimation(categoryInfo[index].color),
                                  ),
                                ),

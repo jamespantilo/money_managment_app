@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:pfe_project/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pfe_project/core/app_export.dart';
@@ -6,7 +7,7 @@ import 'package:pfe_project/widgets/image_type/image_type.dart';
 
 // ignore: must_be_immutable
 class OnboardingonboardingfifteenItemWidget extends StatelessWidget {
-  const OnboardingonboardingfifteenItemWidget({Key? key, required this.imagePath, required this.categoryName, required this.description, required this.amount, required this.isIncome})
+  const OnboardingonboardingfifteenItemWidget({Key? key, required this.imagePath, required this.categoryName, required this.description, required this.amount, required this.isIncome, required this.date})
       : super(
           key: key,
         );
@@ -15,6 +16,7 @@ class OnboardingonboardingfifteenItemWidget extends StatelessWidget {
   final String description;
   final int amount;
   final bool isIncome ;
+  final DateTime date ;
 
   @override
   Widget build(BuildContext context) {
@@ -23,34 +25,53 @@ class OnboardingonboardingfifteenItemWidget extends StatelessWidget {
       child:Container(
         padding: EdgeInsets.symmetric(
           horizontal: 17.h,
-          vertical: 10.v,
+          vertical: 4.v,
         ),
         decoration: AppDecoration.fillGray.copyWith(
           borderRadius: BorderRadiusStyle.roundedBorder24,
         ),
-        child: ListTile(
-          leading: CustomIconButton(
-            decoration: const BoxDecoration(
-              color: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(color: Colors.grey.shade100,borderRadius: BorderRadius.circular(25)),
+          padding: const EdgeInsets.all(24.0),
+          width: MediaQuery.sizeOf(context).width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+          Row(
+            //mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CustomIconButton(
+            height: 60.adaptSize,
+            width: 60.adaptSize,
+            padding: EdgeInsets.all(10.h),
+            child: ImageTypeView(
+              imagePath: imagePath,
+              imageType: "asset",
+              color: Colors.deepPurple,
             ),
-          height: 40.adaptSize,
-          width: 40.adaptSize,
-          //padding: EdgeInsets.all(4.h),
-          child: ImageTypeView(
+          ), Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: Text(
+                  categoryName,style: const TextStyle(fontSize: 24),),
+              ),
+              const SizedBox(height: 8,),
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: Text(description.length > 20 ? "${description.substring(0, 20)}..." :
+                description,style: const TextStyle(color: Colors.grey,fontSize: 20),),
+              )
+            ],)
+          ],),
+              Column(children: [
+                Text(isIncome ? '+$amount' : '-$amount',style:  TextStyle(color: isIncome ? Colors.green : Colors.red,fontSize: 24),),const SizedBox(height: 8,),
+                 Text(DateFormat('d MMMM y').format(date))
+              ],),
+          ]),)
 
-            imagePath: imagePath,
-            imageType: 'asset',
-            color: Colors.deepPurple,
-          ),
-        ),
-          title: Text(
-          categoryName,
-          style: CustomTextStyles.titleMedium18,
-        ),
-          trailing:  Text(isIncome ? '+$amount' : '-$amount',style:  TextStyle(color: isIncome ? Colors.green : Colors.red,fontSize: 24),),subtitle:  Padding(
-          padding: const EdgeInsets.only(top: 4,bottom: 4),
-          child: Text(description.length > 20 ? "${description.substring(0, 20)}..." : description,style: const TextStyle(color: Colors.grey,fontSize: 18),),
-        ),)
       ),
     );
   }

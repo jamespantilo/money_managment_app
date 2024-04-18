@@ -337,7 +337,7 @@ class _MenuPageScreenState extends State<MenuPageScreen> {
           btnCancelOnPress: () {},
           btnCancelText: "No",
           btnOkOnPress: () async {
-            await sharedPref!.setInt('signin', 0);
+            sharedPref!.clear();
             Navigator.pushNamedAndRemoveUntil(
             context, AppRoutes.onboardingLoginScreen, (route) => false);
           },

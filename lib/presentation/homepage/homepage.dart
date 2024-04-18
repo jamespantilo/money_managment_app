@@ -47,7 +47,9 @@ class Expense {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, this.isLogin});
+
+  final bool? isLogin;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -356,10 +358,90 @@ void displayTotalAmount() {
   });
 }
 
+
+  Future<void> _fetchAndMergeCategories() async {
+    try {
+      // Merge Firestore categories with existing categories
+
+      firestoreCategories.forEach((firestoreCategory) {
+        if (!categories.any((category) => category['categoryName'] == firestoreCategory['categoryName'])) {
+          categories.add(firestoreCategory);
+        }
+      });
+
+      // Update UI with merged categories
+      setState(() {
+        loading = false;
+      });
+    } catch (e) {
+      print('Error fetching and merging categories: $e');
+    }
+  }
+
+
+
+  Future<void> _fetchCategoriesByUserId() async {
+    try {
+      // Query Firestore to retrieve categories
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('category')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        //print(doc.data() as Map<String, dynamic>);
+        // Extract data from each document and add it to the list
+        firestoreCategories.add(doc.data() as Map<String, dynamic>);
+
+      });
+
+      setState(() {
+
+      });
+
+    } catch (e) {
+      print('Error fetching categories: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> categories = [
+    {
+      "categoryName": "Shopping",
+      "categoryImagePath": "assets/images/shopping.png",
+      'categoryColor': Colors.black.value as int
+    },
+    {
+      "categoryName": "Subscription",
+      "categoryImagePath": "assets/images/subscription.png",
+      'categoryColor': Colors.white.value as int
+    },
+    {
+      "categoryName": "Food",
+      "categoryImagePath": "assets/images/food.png",
+      'categoryColor': Colors.grey.value as int
+    },
+    {
+      "categoryName": "Traveling",
+      "categoryImagePath": "assets/images/travelling.png",
+      'categoryColor': Colors.lightBlue.value as int
+    },
+    {
+      "categoryName": "Transportation",
+      "categoryImagePath": "assets/images/transport.png",
+      'categoryColor': Colors.lightGreen.value as int
+    }
+  ];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    userId = sharedPref!.getString('userId')!;
+    _fetchCategoriesByUserId().then((_) {
+      _fetchAndMergeCategories().then((value) {
+        userCategories = categories;
+      });
+    });
     _getIncomeData().then((_) {
       _initIncome().then((__) {
         _filterIncomeData().then((___) {
@@ -411,6 +493,7 @@ void displayTotalAmount() {
         floatingActionButton: CustomFloatingButton(
           height: 53,
           width: 58,
+          backgroundColor: theme.colorScheme.primary,
           onTap: () {
             setState(() {
               clickedAddButton
@@ -847,10 +930,7 @@ void displayTotalAmount() {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
-            padding: EdgeInsets.only(
-              top: 7.v,
-              bottom: 2.v,
-            ),
+            padding: EdgeInsets.only(left: 14,top: 0, bottom: 0),
             child: Text(
               "Recents",
               style: CustomTextStyles.titleMediumSemiBold,
@@ -906,6 +986,7 @@ void displayTotalAmount() {
               itemBuilder: (context, index) {
                 final item = combinedList[index];
                 return  OnboardingonboardingfifteenItemWidget(
+                  date: item is Income ? item.incomeDate : item.expenceDate,
                   categoryName: item is Income ? item.incomeCategory : item.expenceCategory,
                   imagePath: item is Income ? _getImagePath(item.incomeCategory) : _getImagePath(item.expenceCategory),
                   amount: item is Income ? item.incomeAmount : item.expenceAmount,
@@ -970,7 +1051,7 @@ void displayTotalAmount() {
             FinancialReportDetailPieExpenseCategoryPage(
                 dataMap: calculateTotalAmountPerCategory(incomes),
             expenses: expenses,incomes: incomes,),))
-            : Navigator.pushNamed(context, getCurrentRoute(type));
+            : type == BottomBarEnum.Home ? Navigator.pushReplacementNamed(context, getCurrentRoute(type)) : Navigator.pushNamed(context, getCurrentRoute(type));
 
       },
     );

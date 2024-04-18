@@ -4,6 +4,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pfe_project/main.dart';
+import 'package:pfe_project/theme/theme_helper.dart';
 
 import '../../routes/app_routes.dart';
 
@@ -144,10 +145,6 @@ class _MyCategoriesPageState extends State<MyCategoriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _saveSelectedCategories(context),
-        child: const Icon(Icons.save),
-      ),
       appBar: AppBar(
         title: const Text('My Categories'),
         centerTitle: true,
@@ -196,7 +193,24 @@ class _MyCategoriesPageState extends State<MyCategoriesPage> {
               );
             },
           ),
-          loading ? const Center(child: CircularProgressIndicator(color: Colors.red,),) : const SizedBox()
+          loading ? const Center(child: CircularProgressIndicator(color: Colors.red,),) : const SizedBox(),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(color: theme.colorScheme.primary,borderRadius: BorderRadius.circular(50)),
+                child: IconButton(
+                  iconSize: 40,
+                  color: Colors.white,
+                  icon: Icon(Icons.add),onPressed: () {
+                  _saveSelectedCategories(context);
+
+          },),
+              ),
+            ),)
         ],
       ),
     );
